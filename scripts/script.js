@@ -176,6 +176,8 @@ const controller = (() => {
     reset();
     for (let i = 0; i < elements.length; i++) {
       elements[i].addEventListener('click', allowMove);
+      elements[i].addEventListener('mouseover', mouseHover);
+      elements[i].addEventListener('mouseout', mouseOff);
     }
     alert("Start Game Player 1 Begin!");
     showPlayer(1);
@@ -195,6 +197,8 @@ const controller = (() => {
 
     for (let i = 0; i < elements.length; i++) {
       elements[i].removeEventListener('click', allowMove);
+      elements[i].removeEventListener('mouseover', mouseHover);
+      elements[i].removeEventListener('mouseout', mouseOff);
     }
     reset();
   }
@@ -260,7 +264,7 @@ const controller = (() => {
       `font-size: 170px;
       line-height: 125px;
       color: ${color};
-      opacity: 1;`
+      opacity: 1.1;`
     );
   }
 
@@ -296,6 +300,20 @@ const controller = (() => {
       endGame();
     }
   };
+  function mouseHover(e) {
+    if(e.target.style["opacity"] !== "1.1") {
+      e.target.style["opacity"] = "1"
+      e.target.style["cursor"] = "pointer";
+    }
+
+  }
+  function mouseOff(e) {
+    if(e.target.style["opacity"] !== "1.1") {
+      e.target.style["opacity"] = "0.8";
+      e.target.style["cursor"] = "pointer";
+    }
+
+  }
   return {
     play,
     reset
