@@ -170,8 +170,9 @@ const controller = (() => {
   let elements = document.getElementsByClassName("block");
   let player1 = document.querySelector(".player1");
   let player2 = document.querySelector(".player2");
-  let winningDisplay = document.querySelector(".results");
-  let result = "";
+  let winningDisplay = document.querySelector(".winner");
+  let actionDisplay = document.querySelector(".action");
+  let winner = "";
   const play = () => {
     reset();
     for (let i = 0; i < elements.length; i++) {
@@ -182,11 +183,14 @@ const controller = (() => {
     alert("Start Game Player 1 Begin!");
     showPlayer(1);
     winningDisplay.textContent = "";
+    actionDisplay.textContent = "";
   }
 
   const endGame = () => {
-    let color = result.includes("P1") ? "red" : "green";
-    winningDisplay.textContent = result;
+    let color = winner.includes("P1") ? "red" : "green";
+    color = winner.includes("Tie") ? "Purple" : color;
+    winningDisplay.textContent = winner;
+    actionDisplay.textContent = "Hit Play to play again!"
     winningDisplay.setAttribute(
       'style',
       `margin-top: 16px;
@@ -200,7 +204,6 @@ const controller = (() => {
       elements[i].removeEventListener('mouseover', mouseHover);
       elements[i].removeEventListener('mouseout', mouseOff);
     }
-    reset();
   }
 
   const reset = () => {
@@ -222,6 +225,7 @@ const controller = (() => {
         `opacity: 0.8;`
       );
     }
+    actionDisplay
     gameBoard.clearBoard();
   }
   const showPlayer = (player) => {
@@ -296,19 +300,21 @@ const controller = (() => {
     arr = gameBoard.getGameOverStatus();
     if (arr[0]) {
       game = false;
-      result = arr[1];
+      winner = arr[1];
       endGame();
     }
   };
+
   function mouseHover(e) {
-    if(e.target.style["opacity"] !== "1.1") {
+    if (e.target.style["opacity"] !== "1.1") {
       e.target.style["opacity"] = "1"
       e.target.style["cursor"] = "pointer";
     }
 
   }
+
   function mouseOff(e) {
-    if(e.target.style["opacity"] !== "1.1") {
+    if (e.target.style["opacity"] !== "1.1") {
       e.target.style["opacity"] = "0.8";
       e.target.style["cursor"] = "pointer";
     }

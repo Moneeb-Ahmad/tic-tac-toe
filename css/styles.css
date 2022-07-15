@@ -67,3 +67,10 @@ button:hover {
   display: flex;
   gap: 160px;
 }
+
+.action {
+  margin-top: 16px;
+  font-size: 48px;
+  font-weight: bolder;
+  color: blue;
+}
