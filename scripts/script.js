@@ -22,11 +22,11 @@ const gameBoard = (() => {
     let arr = [];
     if (isThreeInARow("x")) {
       clearBoard();
-      arr.push(true, "X wins");
+      arr.push(true, "P1 wins!");
       return arr;
-    } else if (isThreeInARow("y")) {
+    } else if (isThreeInARow("o")) {
       clearBoard();
-      arr.push(true, "Y wins");
+      arr.push(true, "P2 wins!");
       return arr;
     } else if (isBoardFull()) {
       clearBoard();
@@ -113,6 +113,9 @@ const gameBoard = (() => {
     return board.length === 0 ? true : false;
   }
   const clearBoard = () => {
+    if (isBoardEmpty()) {
+      init();
+    }
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
         board[i][j] = "";
@@ -122,7 +125,8 @@ const gameBoard = (() => {
   return {
     printArray,
     place,
-    getGameOverStatus
+    getGameOverStatus,
+    clearBoard
   };
 })();
 /********************************Player***************************************/
@@ -138,13 +142,17 @@ const player = (number) => {
   const incScore = () => {
     score++;
   }
-  const move = () => {
-    let row = Number(prompt(`${getNumber()} Row:`));
-    row -= 1;
-    let col = Number(prompt(`${getNumber()} Col:`));
-    col -= 1;
+  const move = (row, col) => {
     let res = [row, col];
     return res;
+  }
+
+
+  const removeListeners = () => {
+    let elements = document.getElementsByClassName("block");
+    for (var i = 0; i < elements.length; i++) {
+      elements[i].removeEventListener('click', myFunction, false);
+    }
   }
   return {
     getNumber,
@@ -157,61 +165,154 @@ const player = (number) => {
 const controller = (() => {
   let p1 = player(1);
   let p2 = player(2);
+  let keyMove = [0, 0];
+  let curPlayer = true;
+  let elements = document.getElementsByClassName("block");
+  let player1 = document.querySelector(".player1");
+  let player2 = document.querySelector(".player2");
+  let winningDisplay = document.querySelector(".results");
+  let result = "";
   const play = () => {
-    let game = true;
-    let result = "";
-    while (game) {
-      while (true) {
-        let m = p1.move();
-        let valid = gameBoard.place(m[0], m[1], "x");
-        if (valid) {
-          break;
-        } else {
-          alert("Invalid move!");
-        }
-      }
-      gameBoard.printArray();
-      let arr = gameBoard.getGameOverStatus();
-      if (arr[0]) {
-        game = false;
-        result = arr[1];
-        break;
-      }
+    reset();
+    for (let i = 0; i < elements.length; i++) {
+      elements[i].addEventListener('click', allowMove);
+    }
+    alert("Start Game Player 1 Begin!");
+    showPlayer(1);
+    winningDisplay.textContent = "";
+  }
 
-      while (true) {
-        let m = p2.move();
-        let valid = gameBoard.place(m[0], m[1], "y");
-        if (valid) {
-          break;
-        } else {
-          alert("Invalid move!");
-        }
+  const endGame = () => {
+    let color = result.includes("P1") ? "red" : "green";
+    winningDisplay.textContent = result;
+    winningDisplay.setAttribute(
+      'style',
+      `margin-top: 16px;
+      font-size: 48px;
+      font-weight: bolder;
+      color: ${color};`
+    );
+
+    for (let i = 0; i < elements.length; i++) {
+      elements[i].removeEventListener('click', allowMove);
+    }
+    reset();
+  }
+
+  const reset = () => {
+    player1.setAttribute(
+      'style',
+      `border-style: none;
+          transform: scale(1);`
+    );
+    player2.setAttribute(
+      'style',
+      `border-style: none;
+          transform: scale(1);`
+    );
+    for (let i = 0; i < elements.length; i++) {
+      elements[i].removeEventListener('click', allowMove);
+      elements[i].textContent = "";
+      elements[i].setAttribute(
+        'style',
+        `opacity: 0.8;`
+      );
+    }
+    gameBoard.clearBoard();
+  }
+  const showPlayer = (player) => {
+    if (player === 1) {
+      player1.setAttribute(
+        'style',
+        `border: 1px;
+          border-radius: 50%;
+          border-style: solid;
+          border-color: red;
+          transform: scale(1.1);`
+      );
+      player2.setAttribute(
+        'style',
+        `border-style: none;
+            transform: scale(1);`
+      );
+
+    } else {
+      player2.setAttribute(
+        'style',
+        `border: 1px;
+          border-radius: 50%;
+          border-style: solid;
+          border-color: green;
+          transform: scale(1.1);`
+      );
+      player1.setAttribute(
+        'style',
+        `border-style: none;
+            transform: scale(1);`
+      );
+    }
+  }
+
+  const formatText = (elementText, player) => {
+    let color = player === 1 ? "red" : "green";
+    elementText.setAttribute(
+      'style',
+      `font-size: 170px;
+      line-height: 125px;
+      color: ${color};
+      opacity: 1;`
+    );
+  }
+
+  function allowMove(e) {
+    let row = e.target.getAttribute("data-key1");
+    let col = e.target.getAttribute("data-key2");
+    if (curPlayer) {
+      showPlayer(1);
+      let m = p1.move(row, col);
+      let valid = gameBoard.place(m[0], m[1], "x");
+      if (valid) {
+        showPlayer(2);
+        e.target.textContent = "X";
+        formatText(e.target, 1);
+        curPlayer = curPlayer ? false : true;
       }
-      gameBoard.printArray();
-      arr = gameBoard.getGameOverStatus();
-      if (arr[0]) {
-        game = false;
-        result = arr[1];
-        break;
+    } else {
+      showPlayer(2);
+      let m = p2.move(row, col);
+      let valid = gameBoard.place(m[0], m[1], "o");
+      if (valid) {
+        showPlayer(1);
+        e.target.textContent = "O";
+        formatText(e.target, 2);
+        curPlayer = curPlayer ? false : true;
       }
     }
-    return result;
-  }
+    //gameBoard.printArray();
+    arr = gameBoard.getGameOverStatus();
+    if (arr[0]) {
+      game = false;
+      result = arr[1];
+      endGame();
+    }
+  };
   return {
-    play
+    play,
+    reset
   };
 })();
 /*****************************DRIVER******************************************/
-function driver() {
-  while (true) {
-    let results = controller.play();
-    alert(results);
-    let playAgain = prompt("Play again?");
-    if (playAgain.includes("n") || playAgain.includes("N")) {
-      break;
-    }
-  }
-  alert("Thanks for Playing!");
+function startGame() {
+  controller.play();
 }
 
-driver();
+function resetGame() {
+  controller.reset();
+}
+
+
+let playBtn = document.querySelector(".play-btn");
+playBtn.addEventListener('click', startGame);
+
+let resetBtn = document.querySelector(".reset-btn");
+resetBtn.addEventListener('click', resetGame);

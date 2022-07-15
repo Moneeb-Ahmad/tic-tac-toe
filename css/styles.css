@@ -1,3 +1,68 @@
 body {
   background-color: #222222;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+button {
+  background-color: aquamarine;
+  color: black;
+  border-radius: 10px;
+  font-size: 18px;
+  border: 2px;
+  border-style: solid;
+  border-color: black;
+  margin-top: 16px;
+  opacity: 0.8;
+  padding: 4px 32px;
+}
+
+button:hover {
+  opacity: 1;
+}
+
+.players {
+  display: flex;
+  font-size: 24px;
+  gap: 300px;
+  margin-bottom: 16px;
+}
+
+.player1 {
+  color: red;
+}
+
+.player2 {
+  color: green;
+}
+
+.turnInd {
+  visibility: hidden;
+}
+
+.grid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid>div>div {
+  display: flex;
+  border-width: 1px;
+  border-style: solid;
+  border-color: black;
+  background-color: #ffbfcc;
+  box-sizing: border-box;
+  opacity: 0.8;
+  width: 125px;
+  height: 125px;
+}
+
+.btns {
+  display: flex;
+  gap: 160px;
 }
